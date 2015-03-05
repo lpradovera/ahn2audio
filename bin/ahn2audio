@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/audio_processor.rb'
+
+audio_proc = AudioProcessor.new ARGV[0]
+
+audio_proc.run
