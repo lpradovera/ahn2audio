@@ -5,6 +5,7 @@ class AudioProcessor
 
   def initialize(yaml_file, root_element = 'en', voice='Victoria', sox_opts="-r 8000 -c1")
     @audio = YAML.load_file(ARGV[0])
+    @new_audio = Marshal.load(Marshal.dump(@audio))
     @root_element = root_element
     @voice = voice
     @sox_opts = sox_opts
@@ -18,15 +19,23 @@ class AudioProcessor
       destfile = File.join(destination, "#{key}.wav")
       `say -v #{@voice} "#{val}" -o #{tempfile}`
       `sox #{tempfile} #{@sox_opts} #{destfile}`
-      p "#{destfile} created"
+      puts "#{destfile} created"
     end
+    puts @new_audio.to_yaml
+    File.open(File.join(destination, 'en.yml'), 'w') {|f| f.write @new_audio.to_yaml }
   end
 
   def flatten_hash(my_hash, parent=[])
     my_hash.flat_map do |key, value|
       case value
         when Hash then flatten_hash( value, parent+[key] )
-        else [(parent+[key]).join('_'), value]
+        else
+          temp = @new_audio["en"]
+          parent.each do |pr|
+            temp = temp[pr]
+          end
+          temp["audio"] = parent.join('_') + '.wav'
+          [(parent+[key]).join('_'), value]
       end
     end
   end
