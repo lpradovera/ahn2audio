@@ -34,7 +34,7 @@ class AudioProcessor
           parent.each do |pr|
             temp = temp[pr]
           end
-          temp["audio"] = parent.join('_') + '.wav'
+          temp["audio"] = parent.join('/') + '.wav'
           [(parent+[key]).join('_'), value]
       end
     end
